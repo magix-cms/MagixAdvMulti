@@ -1,0 +1,103 @@
+// ==========================================================================
+// PLUGIN : MAGIX ADVMULTI (Points Forts)
+// ==========================================================================
+
+// Variables surchargeables par le thème
+$advmulti-transition: all 0.3s ease-in-out !default;
+$advmulti-icon-size-top: 3rem !default;
+$advmulti-icon-size-left: 2.5rem !default;
+
+.magix-advmulti-widget {
+
+  .advmulti-card {
+    transition: $advmulti-transition;
+    background-color: #fff;
+    border-radius: var(--bs-border-radius-lg);
+    overflow: hidden; // Pour éviter que le lien stretched ne dépasse
+
+    // ==========================================
+    // 🎨 ANIMATIONS AU SURVOL
+    // ==========================================
+    &:hover {
+      // 1. La carte se soulève et l'ombre s'accentue
+      transform: translateY(-5px);
+      box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.10) !important;
+
+      // 2. Le titre prend la couleur primaire
+      .card-title {
+        color: var(--main-color-dark);
+      }
+
+      // 3. L'icône grossit légèrement et fait une petite rotation
+      .card-icon i {
+        transform: scale(1.15) rotate(5deg);
+        color: var(--main-color-dark) !important;
+        // Optionnel : ajouter un petit effet d'ombre sous l'icône
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+      }
+    }
+
+    // Transitions douces sur les éléments internes
+    .card-title {
+      transition: color 0.2s ease-in-out;
+      color: var(--dark-color);
+    }
+    .card-icon i {
+      display: inline-block; // Requis pour que le transform (scale/rotate) fonctionne
+      transition: $advmulti-transition;
+      color: var(--main-color);
+    }
+
+    // ==========================================
+    // 📐 LAYOUT 1 : ICÔNE EN HAUT (Centré)
+    // ==========================================
+    &.layout-icon-top {
+      text-align: center;
+      padding: 2rem;
+      flex-direction: column; // Flexbox vertical
+
+      .card-icon {
+        margin-bottom: 1.25rem;
+        i {
+          font-size: $advmulti-icon-size-top;
+        }
+      }
+
+      .card-body {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+    }
+
+    // ==========================================
+    // 📐 LAYOUT 2 : ICÔNE À GAUCHE (Aligné verticalement)
+    // ==========================================
+    &.layout-icon-left {
+      text-align: left;
+      padding: 1.5rem;
+      flex-direction: row; // Flexbox horizontal
+      align-items: center; // Centre l'icône et le texte verticalement
+
+      .card-icon {
+        flex-shrink: 0; // Empêche l'icône de s'écraser si le texte est long
+        margin-right: 1.5rem;
+        margin-bottom: 0;
+
+        i {
+          font-size: $advmulti-icon-size-left;
+        }
+      }
+
+      .card-body {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; // Centre le texte
+        flex-grow: 1;
+      }
+    }
+
+  }
+}

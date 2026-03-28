@@ -1,0 +1,14 @@
+{
+  "name": "MagixAdvMulti",
+  "version": "1.0.0",
+  "description": "Ajoute des points fort",
+  "author": "Magix CMS",
+  "type": "hybrid",
+  "has_config": true,
+  "default_hooks": [
+    "displayHomeBottom",
+    "displayProductExtraContent",
+    "displayPageBottom",
+    "displayCategoryBottom"
+  ]
+}
