@@ -11,7 +11,7 @@ $advmulti-icon-size-left: 2.5rem !default;
 
   .advmulti-card {
     transition: $advmulti-transition;
-    background-color: #fff;
+    background-color: var(--body-bg);
     border-radius: var(--bs-border-radius-lg);
     overflow: hidden; // Pour éviter que le lien stretched ne dépasse
 
