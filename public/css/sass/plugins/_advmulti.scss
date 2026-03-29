@@ -4,8 +4,8 @@
 
 // Variables surchargeables par le thème
 $advmulti-transition: all 0.3s ease-in-out !default;
-$advmulti-icon-size-top: 3rem !default;
-$advmulti-icon-size-left: 2.5rem !default;
+$advmulti-icon-size-top: 4rem !default;
+$advmulti-icon-size-left: 3.5rem !default;
 
 .magix-advmulti-widget {
 
@@ -57,7 +57,7 @@ $advmulti-icon-size-left: 2.5rem !default;
       flex-direction: column; // Flexbox vertical
 
       .card-icon {
-        margin-bottom: 1.25rem;
+        margin-bottom: var(--spacer);
         i {
           font-size: $advmulti-icon-size-top;
         }
