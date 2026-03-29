@@ -1,25 +1,15 @@
 {if isset($magix_advmulti_data) && !empty($magix_advmulti_data.items)}
-
-{* 🟢 1. DICTIONNAIRE DYNAMIQUE DES LAYOUTS
-   On associe chaque module de votre manifest.json à un style précis ('top' ou 'left').
-*}
 {assign var="layoutMap" value=[
     'home'     => 'top',
     'product'  => 'left',
     'pages'    => 'left',
     'category' => 'top'
 ]}
-
-{* 🟢 2. RÉCUPÉRATION DU BON LAYOUT
-   On cherche dans le tableau la valeur correspondante au module actuel.
-   Si le module n'est pas dans le tableau, on applique 'left' par défaut.
-*}
 {assign var="layout" value=$layoutMap[$magix_advmulti_data.module]|default:'left'}
-{* ==========================================================
-🎨 AFFICHAGE DE LA GRILLE
-========================================================== *}
+
 <div id="advmulti-{$magix_advmulti_data.module}" class="magix-advmulti-widget py-5">
     <div class="container">
+        <h2 class="text-center mb-5 fw-bold">{#featured_adv_title#|default:'Nos points fort'}</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
             {foreach $magix_advmulti_data.items as $item}
                 {assign var="isBi" value=$item.icon_advmulti|strpos:'bi-' === 0}
