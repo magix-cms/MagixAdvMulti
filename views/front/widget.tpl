@@ -42,7 +42,8 @@
                             {if !empty($item.url_advmulti)}
                                 <a href="{$item.url_advmulti}"
                                    class="stretched-link"
-                                   {if $item.blank_advmulti}target="_blank" rel="noopener noreferrer"{/if}>
+                                   {if $item.blank_advmulti}target="_blank" rel="noopener noreferrer"{/if}
+                                    title="{$item.title_advmulti}">
                                     <span class="visually-hidden">En savoir plus sur {$item.title_advmulti}</span>
                                 </a>
                             {/if}

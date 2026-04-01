@@ -21,7 +21,7 @@ class Boot
     public function register(): void
     {
         // ==========================================
-        // 1. HOOKS BACKEND (Administration)
+        // 1. HOOKS BACKEND (Administration) - ON GARDE !
         // ==========================================
         foreach ($this->targetModules as $module => $idKey) {
 
@@ -37,13 +37,12 @@ class Boot
                 $smarty = SmartyTool::getInstance('admin');
                 $idModule = (int)($params[$idKey] ?? 0);
 
-                // 🟢 On scanne les icônes et on les passe à Smarty
                 $icons = IconScanner::getAvailableIcons();
 
                 $smarty->assign([
                     'advmulti_module'    => $module,
                     'advmulti_id_module' => $idModule,
-                    'available_icons'    => $icons // Injection des icônes
+                    'available_icons'    => $icons
                 ]);
 
                 $file = ROOT_DIR . 'plugins' . DS . 'MagixAdvMulti' . DS . 'views' . DS . 'admin' . DS . 'hooks' . DS . 'tab_content.tpl';
@@ -54,7 +53,7 @@ class Boot
         // ==========================================
         // 2. HOOKS FRONTEND (Côté public)
         // ==========================================
-        HookManager::register('displayPageBottom', 'MagixAdvMulti', function(array $params) {
+        /*HookManager::register('displayPageBottom', 'MagixAdvMulti', function(array $params) {
             return FrontendController::renderWidget($params, 'pages', 'id_pages');
         });
 
@@ -65,6 +64,6 @@ class Boot
         // 🟢 Ajout du Hook spécifique pour la page d'accueil
         HookManager::register('displayHomeBottom', 'MagixAdvMulti', function(array $params) {
             return FrontendController::renderWidget($params, 'home', 'id_home'); // id_home sera 0
-        });
+        });*/
     }
 }
