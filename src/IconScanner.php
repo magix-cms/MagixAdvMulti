@@ -30,7 +30,7 @@ class IconScanner
         if (file_exists($iconFile)) {
             $content = file_get_contents($iconFile);
 
-            // 🟢 REGEX : Cherche les classes .bi-xxx::before ou .ico-xxx::before (selon vos préfixes)
+            //  REGEX : Cherche les classes .bi-xxx::before ou .ico-xxx::before (selon vos préfixes)
             // On remplace [a-zA-Z0-9\-] par [\w\-] qui inclut automatiquement les underscores
             if (preg_match_all('/\.((?:bi|ico|icon)-[\w\-]+)::?before/', $content, $matches)) {                foreach ($matches[1] as $iconClass) {
                     $icons[] = $iconClass;

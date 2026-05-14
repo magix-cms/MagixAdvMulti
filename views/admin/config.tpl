@@ -14,7 +14,7 @@
         Les éléments que vous gérez ici s'afficheront de manière globale sur la page d'accueil de votre site web.
     </div>
 
-    {* 🟢 ASTUCE : On crée un "faux" onglet caché.
+    {*  ASTUCE : On crée un "faux" onglet caché.
        Cela empêche le constructeur MagixAjaxManager de planter s'il cherche l'ID de l'onglet par défaut. *}
     <div id="magix-advmulti-tab" class="d-none"></div>
 
@@ -43,7 +43,7 @@
                 }
             }
 
-            // 2. 🟢 DÉCLENCHEMENT MANUEL DE L'AJAX
+            // 2.  DÉCLENCHEMENT MANUEL DE L'AJAX
             // Au lieu d'attendre un clic sur un onglet, on force le chargement de la liste
             if (typeof window.advApp !== 'undefined') {
                 // Selon la version de votre MagixAjaxManager, la méthode pour charger la liste

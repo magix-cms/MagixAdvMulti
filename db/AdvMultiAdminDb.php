@@ -78,7 +78,7 @@ class AdvMultiAdminDb extends BaseDb
         return $this->executeInsert($qb) ? (int)$this->getLastInsertId() : false;
     }
 
-    // 🟢 MISE À JOUR DE LA STRUCTURE (Pour l'icône)
+    //  MISE À JOUR DE LA STRUCTURE (Pour l'icône)
     public function updateStructure(int $id, array $data): bool
     {
         $qb = new QueryBuilder();

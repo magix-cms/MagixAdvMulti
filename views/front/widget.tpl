@@ -16,7 +16,7 @@
                 {assign var="baseIconClass" value="{if $isBi}bi{else}ico{/if}"}
 
                 <div class="col d-flex">
-                    {* 🟢 LES CLASSES MAGIQUES SONT ICI :
+                    {*  LES CLASSES MAGIQUES SONT ICI :
                     - `advmulti-card` : active les animations au survol
                     - `layout-icon-{$layout}` : applique le design (top ou left)
                     - `position-relative` : obligatoire pour rendre toute la carte cliquable

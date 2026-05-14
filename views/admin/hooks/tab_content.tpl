@@ -27,7 +27,7 @@
                 <form id="adv_form_element">
                     <input type="hidden" id="adv_id_advmulti" name="id_advmulti" value="0">
 
-                    {* 🟢 CHAMP GLOBAL : Le sélecteur d'icônes *}
+                    {*  CHAMP GLOBAL : Le sélecteur d'icônes *}
                     <div class="bg-light p-4 rounded border mb-4">
                         <label class="form-label fw-bold"><i class="bi bi-magic me-2"></i>Icône du point fort</label>
                         <input type="hidden" name="icon_advmulti" id="adv_icon_input" value="">
@@ -63,7 +63,7 @@
                         </div>
                     </div>
 
-                    {* 🟢 CHAMPS MULTILINGUES *}
+                    {*  CHAMPS MULTILINGUES *}
                     <div class="tab-content">
                         {if isset($langs)}
                             {foreach $langs as $idLang => $iso}
@@ -87,7 +87,7 @@
                                     <div class="row g-4 mb-4">
                                         <div class="col-md-8">
                                             <label class="form-label fw-medium">URL du lien (Optionnel)</label>
-                                            <input type="url" class="form-control" name="url_advmulti[{$idLang}]" placeholder="https://...">
+                                            <input type="text" class="form-control" name="url_advmulti[{$idLang}]" placeholder="https://...">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label fw-medium">Ouverture du lien</label>
@@ -165,7 +165,7 @@
                 iconOptions.forEach(btn => {
                     btn.addEventListener('click', function() {
                         const selectedIcon = this.getAttribute('data-value');
-                        // 🟢 On détecte dynamiquement la classe de base
+                        //  On détecte dynamiquement la classe de base
                         const baseClass = selectedIcon.startsWith('bi-') ? 'bi' : 'ico';
 
                         hiddenInput.value = selectedIcon;
@@ -176,7 +176,7 @@
                 searchInput.addEventListener('click', e => e.stopPropagation());
             }
 
-            // 3. 🟢 Surcharge de la méthode editItem pour gérer l'icône lors de l'édition
+            // 3.  Surcharge de la méthode editItem pour gérer l'icône lors de l'édition
             if (window.advApp) {
                 const originalEditItem = window.advApp.editItem.bind(window.advApp);
                 window.advApp.editItem = function(item) {
@@ -187,7 +187,7 @@
 
                     // On gère l'icône globale
                     if (item.icon_advmulti) {
-                        // 🟢 Même correction ici pour l'édition
+                        //  Même correction ici pour l'édition
                         const baseClass = item.icon_advmulti.startsWith('bi-') ? 'bi' : 'ico';
                         hiddenInput.value = item.icon_advmulti;
                         previewSpan.innerHTML = `<i class="${baseClass} ${item.icon_advmulti} fs-5 me-2 text-primary"></i> ${item.icon_advmulti}`;

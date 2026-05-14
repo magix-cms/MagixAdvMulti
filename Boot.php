@@ -6,7 +6,7 @@ namespace Plugins\MagixAdvMulti;
 use App\Component\Hook\HookManager;
 use Magepattern\Component\Tool\SmartyTool;
 use Plugins\MagixAdvMulti\src\FrontendController;
-use Plugins\MagixAdvMulti\src\IconScanner; // 🟢 N'oubliez pas d'importer le scanner
+use Plugins\MagixAdvMulti\src\IconScanner; //  N'oubliez pas d'importer le scanner
 
 class Boot
 {
@@ -61,7 +61,7 @@ class Boot
             return FrontendController::renderWidget($params, 'product', 'id_product');
         });
 
-        // 🟢 Ajout du Hook spécifique pour la page d'accueil
+        //  Ajout du Hook spécifique pour la page d'accueil
         HookManager::register('displayHomeBottom', 'MagixAdvMulti', function(array $params) {
             return FrontendController::renderWidget($params, 'home', 'id_home'); // id_home sera 0
         });*/

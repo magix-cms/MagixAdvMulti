@@ -14,12 +14,12 @@ class BackendController extends BaseController
 {
     public function run(): void
     {
-        // 🟢 Déclaration du dossier de vues pour Smarty
+        //  Déclaration du dossier de vues pour Smarty
         SmartyTool::addTemplateDir('advmulti', ROOT_DIR . 'plugins' . DS . 'MagixAdvMulti' . DS . 'views' . DS . 'admin');
 
         $action = $_GET['action'] ?? 'index';
 
-        // 🟢 ROUTAGE
+        //  ROUTAGE
         if ($action && method_exists($this, $action)) {
             $this->$action();
         } else {
@@ -152,15 +152,15 @@ class BackendController extends BaseController
             // Sauvegarde des traductions (lien, titre, etc.)
             if (isset($_POST['title_advmulti']) && is_array($_POST['title_advmulti'])) {
                 foreach ($_POST['title_advmulti'] as $idLang => $title) {
-                    $cleanTitle = FormTool::simpleClean($title);
+                    $cleanTitle = ($title);
 
                     if (!empty($cleanTitle)) {
                         $db->saveContent($idAdv, (int)$idLang, [
                             'title_advmulti'     => $cleanTitle,
                             'desc_advmulti'      => $_POST['desc_advmulti'][$idLang] ?? '',
                             'url_advmulti'       => FormTool::simpleClean($_POST['url_advmulti'][$idLang] ?? ''),
-                            'blank_advmulti'     => isset($_POST['blank_advmulti'][$idLang]) ? 1 : 0,
-                            'published_advmulti' => isset($_POST['published_advmulti'][$idLang]) ? 1 : 0
+                            'blank_advmulti'     => (int)($_POST['blank_advmulti'][$idLang] ?? 0),
+                            'published_advmulti' => (int)($_POST['published_advmulti'][$idLang] ?? 0)
                         ]);
                     }
                 }
