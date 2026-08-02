@@ -134,7 +134,7 @@ class BackendController extends BaseController
                             'published_advmulti' => (int)($_POST['published_advmulti'][$idLang] ?? 0)
                         ]);
 
-                        // 🟢 ENREGISTREMENT DE LA RÉVISION
+                        //  ENREGISTREMENT DE LA RÉVISION
                         if (!empty($desc)) {
                             $revDb->saveRevision('magixadvmulti', $finalId, (int)$idLang, 'desc_advmulti', $desc);
                         }
@@ -142,7 +142,7 @@ class BackendController extends BaseController
                 }
             }
 
-            // 🟢 PURGE DU CACHE
+            //  PURGE DU CACHE
             CacheManager::clearFrontend('magixadvmulti');
 
             // On indique au JS si c'était un ajout ou une mise à jour
