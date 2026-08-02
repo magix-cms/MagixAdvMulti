@@ -101,7 +101,15 @@
 
                                     <div class="mb-4">
                                         <label class="form-label fw-medium">Description :</label>
-                                        <textarea class="form-control mceEditor" name="desc_advmulti[{$idLang}]" id="adv_desc_{$idLang}" rows="6"></textarea>
+                                        {* Ajout des data-attributes avec itemid="0" par défaut *}
+                                        <textarea class="form-control mceEditor"
+                                                  name="desc_advmulti[{$idLang}]"
+                                                  id="adv_desc_{$idLang}"
+                                                  rows="6"
+                                                  data-controller="magixadvmulti"
+                                                  data-itemid="0"
+                                                  data-lang="{$idLang}"
+                                                  data-field="desc_advmulti"></textarea>
                                     </div>
 
                                 </div>
@@ -176,18 +184,20 @@
                 searchInput.addEventListener('click', e => e.stopPropagation());
             }
 
-            // 3.  Surcharge de la méthode editItem pour gérer l'icône lors de l'édition
+            // 3.  Surcharge de la méthode editItem pour gérer l'icône ET les révisions lors de l'édition
             if (window.advApp) {
                 const originalEditItem = window.advApp.editItem.bind(window.advApp);
                 window.advApp.editItem = function(item) {
                     if (typeof item === 'string') item = JSON.parse(item);
+                    originalEditItem(item); // Comportement normal
 
-                    // On appelle le comportement normal (remplissage des champs traduits)
-                    originalEditItem(item);
+                    // Mise à jour de l'ID pour les révisions
+                    document.querySelectorAll('textarea[data-controller="magixadvmulti"]').forEach(ta => {
+                        ta.setAttribute('data-itemid', item.id_advmulti);
+                    });
 
                     // On gère l'icône globale
                     if (item.icon_advmulti) {
-                        //  Même correction ici pour l'édition
                         const baseClass = item.icon_advmulti.startsWith('bi-') ? 'bi' : 'ico';
                         hiddenInput.value = item.icon_advmulti;
                         previewSpan.innerHTML = `<i class="${baseClass} ${item.icon_advmulti} fs-5 me-2 text-primary"></i> ${item.icon_advmulti}`;
@@ -197,10 +207,16 @@
                     }
                 };
 
-                // On surcharge aussi addItem pour réinitialiser l'icône
+                // On surcharge aussi addItem pour réinitialiser l'icône et l'ID
                 const originalAddItem = window.advApp.addItem.bind(window.advApp);
                 window.advApp.addItem = function() {
                     originalAddItem();
+
+                    // Réinitialisation de l'ID pour les révisions (nouvel ajout)
+                    document.querySelectorAll('textarea[data-controller="magixadvmulti"]').forEach(ta => {
+                        ta.setAttribute('data-itemid', '0');
+                    });
+
                     hiddenInput.value = '';
                     previewSpan.innerHTML = 'Sélectionnez une icône...';
                 };

@@ -10,7 +10,9 @@ class AdvMultiFrontDb extends BaseDb
 {
     public function getPublishedItems(string $module, int $idModule, int $idLang): array
     {
+        $cache = $this->getSqlCache(); // Instanciation du cache SQL
         $qb = new QueryBuilder();
+
         $qb->select([
             'a.id_advmulti',
             'a.icon_advmulti',
@@ -27,6 +29,20 @@ class AdvMultiFrontDb extends BaseDb
             ->where('ac.published_advmulti = 1')
             ->orderBy('a.order_advmulti', 'ASC');
 
-        return $this->executeAll($qb) ?: [];
+        // Génération de la clé avec un TAG unique au plugin
+        $cacheKey = $cache->generateKey($qb->getSql(), $qb->getParams(), 'magixadvmulti');
+
+        // Vérification : Les données sont-elles déjà en cache ?
+        if (($data = $cache->get($cacheKey)) !== null) {
+            return $data;
+        }
+
+        // Si le cache est vide, on interroge la base de données
+        $results = $this->executeAll($qb) ?: [];
+
+        // On met le résultat final en cache pour 24 heures (86400 secondes)
+        $cache->set($cacheKey, $results, 86400);
+
+        return $results;
     }
 }

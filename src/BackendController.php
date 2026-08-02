@@ -9,17 +9,16 @@ use Plugins\MagixAdvMulti\src\IconScanner;
 use Magepattern\Component\HTTP\Request;
 use Magepattern\Component\Tool\SmartyTool;
 use Magepattern\Component\Tool\FormTool;
+use App\Component\Cache\CacheManager;
+use App\Backend\Db\RevisionsDb;
 
 class BackendController extends BaseController
 {
     public function run(): void
     {
-        //  Déclaration du dossier de vues pour Smarty
         SmartyTool::addTemplateDir('advmulti', ROOT_DIR . 'plugins' . DS . 'MagixAdvMulti' . DS . 'views' . DS . 'admin');
-
         $action = $_GET['action'] ?? 'index';
 
-        //  ROUTAGE
         if ($action && method_exists($this, $action)) {
             $this->$action();
         } else {
@@ -27,19 +26,11 @@ class BackendController extends BaseController
         }
     }
 
-    /**
-     * ========================================================================
-     * 1. MODE STANDALONE : Affichage de la page de configuration du plugin
-     * ========================================================================
-     */
     private function index(): void
     {
         $db = new AdvMultiAdminDb();
-
-        // 1. On scanne les icônes pour le formulaire
         $icons = IconScanner::getAvailableIcons();
 
-        // 2. On prépare les variables spécifiques pour la page d'accueil (module: home, id: 0)
         $this->view->assign([
             'advmulti_module'    => 'home',
             'advmulti_id_module' => 0,
@@ -48,16 +39,9 @@ class BackendController extends BaseController
             'hashtoken'          => $this->session->getToken()
         ]);
 
-        // 3. Affichage de la vue globale qui inclura le tab_content.tpl
-        // Attention : On utilise la méthode classique de votre CMS pour afficher une page de plugin complète
         $this->view->display('config.tpl');
     }
 
-    /**
-     * ========================================================================
-     * 2. MODE AJAX : Gestion des points forts (utilisé par l'index ET les onglets)
-     * ========================================================================
-     */
     private function loadList(): void
     {
         if (ob_get_length()) ob_clean();
@@ -66,7 +50,6 @@ class BackendController extends BaseController
         $idModule = (int)($_GET['id_module'] ?? 0);
         $idLang = (int)($this->defaultLang['id_lang'] ?? 1);
 
-        // Si on est sur l'accueil, $module = 'home' et $idModule = 0.
         if (empty($module)) {
             echo '<div class="alert alert-warning">Paramètres manquants pour charger les points forts.</div>';
             return;
@@ -81,23 +64,9 @@ class BackendController extends BaseController
         }
 
         $columns = [
-            'icon_advmulti' => [
-                'title' => 'Icône',
-                'type'  => 'text',
-                'class' => 'text-center text-primary fs-5',
-                'width' => '80px'
-            ],
-            'title_advmulti' => [
-                'title' => 'Titre',
-                'type'  => 'text',
-                'class' => 'fw-bold text-dark'
-            ],
-            'published_advmulti' => [
-                'title' => 'Statut',
-                'type'  => 'status',
-                'class' => 'text-center',
-                'width' => '120px'
-            ]
+            'icon_advmulti' => ['title' => 'Icône', 'type' => 'text', 'class' => 'text-center text-primary fs-5', 'width' => '80px'],
+            'title_advmulti' => ['title' => 'Titre', 'type' => 'text', 'class' => 'fw-bold text-dark'],
+            'published_advmulti' => ['title' => 'Statut', 'type' => 'status', 'class' => 'text-center', 'width' => '120px']
         ];
 
         $this->view->assign([
@@ -109,7 +78,6 @@ class BackendController extends BaseController
             'langs'          => $db->fetchLanguages()
         ]);
 
-        // On affiche le petit tableau AJAX
         $this->view->display('ajax/manager.tpl');
     }
 
@@ -132,6 +100,7 @@ class BackendController extends BaseController
         }
 
         $db = new AdvMultiAdminDb();
+        $revDb = new RevisionsDb(); // Instance pour les révisions
 
         try {
             if ($idAdv === 0) {
@@ -144,29 +113,41 @@ class BackendController extends BaseController
                 if (!$idAdv) {
                     $this->jsonResponse(false, 'Erreur lors de la création de la structure.');
                 }
+                $finalId = $idAdv;
             } else {
-                // Mise à jour de l'icône de la structure globale existante
+                $finalId = $idAdv;
                 $db->updateStructure($idAdv, ['icon_advmulti' => $icon]);
             }
 
-            // Sauvegarde des traductions (lien, titre, etc.)
             if (isset($_POST['title_advmulti']) && is_array($_POST['title_advmulti'])) {
                 foreach ($_POST['title_advmulti'] as $idLang => $title) {
-                    $cleanTitle = ($title);
+                    $cleanTitle = FormTool::simpleClean($title);
 
                     if (!empty($cleanTitle)) {
-                        $db->saveContent($idAdv, (int)$idLang, [
+                        $desc = $_POST['desc_advmulti'][$idLang] ?? '';
+
+                        $db->saveContent($finalId, (int)$idLang, [
                             'title_advmulti'     => $cleanTitle,
-                            'desc_advmulti'      => $_POST['desc_advmulti'][$idLang] ?? '',
+                            'desc_advmulti'      => $desc,
                             'url_advmulti'       => FormTool::simpleClean($_POST['url_advmulti'][$idLang] ?? ''),
                             'blank_advmulti'     => (int)($_POST['blank_advmulti'][$idLang] ?? 0),
                             'published_advmulti' => (int)($_POST['published_advmulti'][$idLang] ?? 0)
                         ]);
+
+                        // 🟢 ENREGISTREMENT DE LA RÉVISION
+                        if (!empty($desc)) {
+                            $revDb->saveRevision('magixadvmulti', $finalId, (int)$idLang, 'desc_advmulti', $desc);
+                        }
                     }
                 }
             }
 
-            $this->jsonResponse(true, 'Point fort enregistré avec succès.');
+            // 🟢 PURGE DU CACHE
+            CacheManager::clearFrontend('magixadvmulti');
+
+            // On indique au JS si c'était un ajout ou une mise à jour
+            $isAdd = ((int)($_POST['id_advmulti'] ?? 0) === 0);
+            $this->jsonResponse(true, 'Point fort enregistré avec succès.', ['type' => $isAdd ? 'add' : 'update']);
 
         } catch (\Exception $e) {
             $this->jsonResponse(false, 'Erreur serveur : ' . $e->getMessage());
@@ -182,7 +163,10 @@ class BackendController extends BaseController
         $idAdv = (int)($_POST['id_advmulti'] ?? 0);
         if ($idAdv > 0) {
             $db = new AdvMultiAdminDb();
-            if ($db->deleteItem($idAdv)) $this->jsonResponse(true, 'Supprimé avec succès.');
+            if ($db->deleteItem($idAdv)) {
+                CacheManager::clearFrontend('magixadvmulti');
+                $this->jsonResponse(true, 'Supprimé avec succès.');
+            }
         }
         $this->jsonResponse(false, 'Impossible de supprimer.');
     }
@@ -196,7 +180,10 @@ class BackendController extends BaseController
         $orderedIds = $_POST['ids'] ?? [];
         if (!empty($orderedIds) && is_array($orderedIds)) {
             $db = new AdvMultiAdminDb();
-            if ($db->updateOrder($orderedIds)) $this->jsonResponse(true, 'Ordre mis à jour.');
+            if ($db->updateOrder($orderedIds)) {
+                CacheManager::clearFrontend('magixadvmulti');
+                $this->jsonResponse(true, 'Ordre mis à jour.');
+            }
         }
         $this->jsonResponse(false, 'Erreur lors du tri.');
     }
