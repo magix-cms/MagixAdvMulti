@@ -28,13 +28,22 @@ class BackendController extends BaseController
 
     private function index(): void
     {
-        $db = new AdvMultiAdminDb();
+        $db = new \Plugins\MagixAdvMulti\db\AdvMultiAdminDb();
         $icons = IconScanner::getAvailableIcons();
+
+        // FIX : Récupération du thème actif
+        try {
+            $themeDb = new \App\Backend\Db\ThemeDb();
+            $activeTheme = $themeDb->getCurrentTheme();
+        } catch (\Throwable $e) {
+            $activeTheme = 'default';
+        }
 
         $this->view->assign([
             'advmulti_module'    => 'home',
             'advmulti_id_module' => 0,
             'available_icons'    => $icons,
+            'advmulti_theme'     => $activeTheme,
             'langs'              => $db->fetchLanguages(),
             'hashtoken'          => $this->session->getToken()
         ]);
@@ -61,11 +70,25 @@ class BackendController extends BaseController
         foreach ($items as &$item) {
             $fullData = $db->getItemById((int)$item['id_advmulti']);
             $item['content'] = $fullData['content'] ?? [];
+
+            // 🛡️ FIX : Déduction de la classe de base pour éviter le "rectangle vide"
+            $icon = $item['icon_advmulti'] ?? '';
+            $baseClass = 'ico'; // Par défaut pour icons.css
+
+            if (str_starts_with($icon, 'bi-')) {
+                $baseClass = 'bi';
+            } elseif (str_starts_with($icon, 'fa-') || str_starts_with($icon, 'fas-')) {
+                $baseClass = 'fa'; // Support de FontAwesome
+            }
+
+            // On crée une nouvelle variable contenant la classe complète (ex: "ico ico-star")
+            $item['icon_full_class'] = trim($baseClass . ' ' . $icon);
         }
 
         $columns = [
-            'icon_advmulti' => ['title' => 'Icône', 'type' => 'text', 'class' => 'text-center text-primary fs-5', 'width' => '80px'],
-            'title_advmulti' => ['title' => 'Titre', 'type' => 'text', 'class' => 'fw-bold text-dark'],
+            // On utilise la nouvelle clé icon_full_class et le type "icon"
+            'icon_full_class' => ['title' => 'Icône', 'type' => 'icon', 'class' => 'text-center text-primary fs-5', 'width' => '80px'],
+            'title_advmulti'  => ['title' => 'Titre', 'type' => 'text', 'class' => 'fw-bold text-dark'],
             'published_advmulti' => ['title' => 'Statut', 'type' => 'status', 'class' => 'text-center', 'width' => '120px']
         ];
 

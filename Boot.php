@@ -43,14 +43,23 @@ class Boot
                 });
 
                 HookManager::register("{$module}_edit_content", 'MagixAdvMulti', function(array $params) use ($module, $idKey) {
-                    $smarty = SmartyTool::getInstance('admin');
+                    $smarty = \Magepattern\Component\Tool\SmartyTool::getInstance('admin');
                     $idModule = (int)($params[$idKey] ?? 0);
                     $icons = IconScanner::getAvailableIcons();
+
+                    // FIX : Récupération du thème actif pour charger sa CSS
+                    try {
+                        $themeDb = new \App\Backend\Db\ThemeDb();
+                        $activeTheme = $themeDb->getCurrentTheme();
+                    } catch (\Throwable $e) {
+                        $activeTheme = 'default';
+                    }
 
                     $smarty->assign([
                         'advmulti_module'    => $module,
                         'advmulti_id_module' => $idModule,
-                        'available_icons'    => $icons
+                        'available_icons'    => $icons,
+                        'advmulti_theme'     => $activeTheme
                     ]);
 
                     $file = ROOT_DIR . 'plugins' . DS . 'MagixAdvMulti' . DS . 'views' . DS . 'admin' . DS . 'hooks' . DS . 'tab_content.tpl';

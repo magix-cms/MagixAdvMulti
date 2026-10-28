@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plugins\MagixAdvMulti\src;
 
 use App\Backend\Db\ThemeDb;
+use Magepattern\Component\Debug\Logger;
 
 class IconScanner
 {
@@ -39,6 +40,7 @@ class IconScanner
         } else {
             // Mode Debug optionnel : vous pouvez logger ici si le fichier icons.css manque
             // error_log("MagixAdvMulti: Le fichier $iconFile est introuvable.");
+            Logger::getInstance()->log("MagixAdvMulti: Le fichier $iconFile est introuvable.", "warning", "magixadvmulti", Logger::LOG_YEAR, Logger::LOG_LEVEL_ERROR);
         }
 
         // 4. Nettoyage et tri

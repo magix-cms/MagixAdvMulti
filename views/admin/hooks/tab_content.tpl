@@ -1,3 +1,8 @@
+{* FIX: Chargement de la feuille de style du frontend pour afficher les icônes dans l'admin *}
+{if isset($advmulti_theme)}
+    <link rel="stylesheet" href="../skin/{$advmulti_theme}/css/icons.css">
+{/if}
+
 <div class="tab-pane fade" id="magix-advmulti-pane" role="tabpanel" aria-labelledby="magix-advmulti-tab" tabindex="0">
     <div class="card shadow-sm border-0 mt-3">
         <div class="card-body">
@@ -51,7 +56,7 @@
                                                 <div class="col-3 col-md-2">
                                                     <button class="btn btn-light border-0 w-100 text-center py-2 icon-option"
                                                             type="button" data-value="{$icon}" title="{$icon}">
-                                                        <i class="{if $icon|strpos:'bi-' === 0}bi{else}ico{/if} {$icon} fs-4 d-block mb-1"></i>
+                                                        <i class="{if $icon|strpos:'bi-' === 0}bi{elseif $icon|strpos:'fa-' === 0}fa{else}ico{/if} {$icon} fs-4 d-block mb-1"></i>
                                                     </button>
                                                 </div>
                                             {/foreach}
@@ -173,8 +178,11 @@
                 iconOptions.forEach(btn => {
                     btn.addEventListener('click', function() {
                         const selectedIcon = this.getAttribute('data-value');
-                        //  On détecte dynamiquement la classe de base
-                        const baseClass = selectedIcon.startsWith('bi-') ? 'bi' : 'ico';
+
+                        // FIX : Détection robuste de la classe de base
+                        let baseClass = 'ico';
+                        if (selectedIcon.startsWith('bi-')) baseClass = 'bi';
+                        else if (selectedIcon.startsWith('fa-') || selectedIcon.startsWith('fas-')) baseClass = 'fa';
 
                         hiddenInput.value = selectedIcon;
                         previewSpan.innerHTML = `<i class="${baseClass} ${selectedIcon} fs-5 me-2 text-primary"></i> ${selectedIcon}`;
@@ -198,7 +206,11 @@
 
                     // On gère l'icône globale
                     if (item.icon_advmulti) {
-                        const baseClass = item.icon_advmulti.startsWith('bi-') ? 'bi' : 'ico';
+                        // FIX : Détection robuste à l'édition
+                        let baseClass = 'ico';
+                        if (item.icon_advmulti.startsWith('bi-')) baseClass = 'bi';
+                        else if (item.icon_advmulti.startsWith('fa-') || item.icon_advmulti.startsWith('fas-')) baseClass = 'fa';
+
                         hiddenInput.value = item.icon_advmulti;
                         previewSpan.innerHTML = `<i class="${baseClass} ${item.icon_advmulti} fs-5 me-2 text-primary"></i> ${item.icon_advmulti}`;
                     } else {
